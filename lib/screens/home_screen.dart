@@ -1,4 +1,5 @@
 import 'package:bitweather/models/weather_model.dart';
+import 'package:bitweather/secrets/variables.dart';
 import 'package:bitweather/services/weather_service.dart';
 import 'package:dotlottie_loader/dotlottie_loader.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +17,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   //apiKey
 
-  final _weatherService =
-      WeatherService(apiKey: "d1af8b8d29fc4120682200efe94c578f");
+  final _weatherService = WeatherService(apiKey: apiKey);
 
   Weather? _weather;
 
@@ -101,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: Colors.white,
               ),
               Text(
-                _weather?.cityName ?? "loading ..",
+                _weather?.cityName ?? "loading ...",
                 style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
