@@ -1,23 +1,32 @@
 class Weather {
-  final String cityName;
-  final double temperature;
-  final String mainCondition;
-  final int sunrise;
-  final int sunset;
+  final String weatherText;
+  final double temperatureCelsius;
+  final String uvindextext;
+  final double uvindex;
+  final double humidity;
+  final double realfeeltemperature;
+  final double pressure;
 
-  Weather(
-      {required this.cityName,
-      required this.temperature,
-      required this.sunrise,
-      required this.sunset,
-      required this.mainCondition});
+  Weather({
+    required this.uvindextext,
+    required this.uvindex,
+    required this.humidity,
+    required this.weatherText,
+    required this.temperatureCelsius,
+    required this.realfeeltemperature,
+    required this.pressure,
+  });
 
   factory Weather.fromJSON(Map<String, dynamic> json) {
     return Weather(
-        cityName: json["name"],
-        temperature: json["main"]["temp"].toDouble(),
-        sunrise: json["sys"]["sunrise"].toInt(),
-        sunset: json["sys"]["sunset"],
-        mainCondition: json["weather"][0]["main"]);
+      weatherText: json["WeatherText"] ?? "",
+      temperatureCelsius: json["Temperature"]["Metric"]["Value"] ?? 0.0,
+      uvindextext: json["UVIndexText"] ?? "",
+      uvindex: json["UVIndex"].toDouble() ?? 0.0,
+      humidity: json["RelativeHumidity"].toDouble() ?? 0.0,
+      realfeeltemperature:
+          json["RealFeelTemperature"]["Metric"]["Value"].toDouble() ?? 0.0,
+      pressure: json["Pressure"]["Metric"]["Value"].toDouble() ?? 0.0,
+    );
   }
 }

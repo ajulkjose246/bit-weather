@@ -1,10 +1,9 @@
+import 'package:bitweather/components/weather_charts.dart';
 import 'package:bitweather/models/weather_model.dart';
-import 'package:bitweather/secrets/variables.dart';
 import 'package:bitweather/services/weather_service.dart';
 import 'package:dotlottie_loader/dotlottie_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -17,9 +16,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   //apiKey
 
-  final _weatherService = WeatherService(apiKey: apiKey);
-
+  final _weatherService = WeatherService();
   Weather? _weather;
+  // ignore: prefer_typing_uninitialized_variables
+  var placemark;
 
   //fetch weather
   _fetchWeather() async {
@@ -29,8 +29,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
     //get weather for city
     try {
+      placemark = await _weatherService.getLocation(city);
+      // print(placemark);
       final weather =
-          await _weatherService.getWeather(city.latitude, city.longitude);
+          await _weatherService.getAccuweather(placemark?.postalCode);
+      // await _weatherService.getWeather(city.latitude, city.longitude);
       setState(() {
         _weather = weather;
       });
@@ -50,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
     switch (mainCondition.toLowerCase()) {
       case "clear":
         return "assets/lottie/clear.lottie";
-      case "clouds":
+      case "Clouds and sun":
         return "assets/lottie/clouds.lottie";
       case "rain":
         return "assets/lottie/rain.lottie";
@@ -72,16 +75,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  String _formatTimestamp(timestamp) {
-    if (timestamp != null) {
-      var dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
-      var formattedTime = DateFormat('HH:mm:ss').format(dateTime);
-      return formattedTime;
-    } else {
-      return "";
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.sizeOf(context);
@@ -89,8 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: const Color.fromRGBO(36, 36, 36, 1),
       body: SafeArea(
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: ListView(
             children: [
               const SizedBox(
                 height: 25,
@@ -100,16 +92,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 size: 20,
                 color: Colors.white,
               ),
-              Text(
-                _weather?.cityName ?? "loading ...",
-                style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500),
+              Align(
+                child: Text(
+                  placemark?.locality ?? "loading ...",
+                  // _weather?.cityName ?? "loading ...",
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w500),
+                ),
               ),
-              const Spacer(),
               DotLottieLoader.fromAsset(
-                  getWeatherAnimation(_weather?.mainCondition),
+                  getWeatherAnimation(_weather?.weatherText),
                   frameBuilder: (BuildContext ctx, DotLottie? dotlottie) {
                 if (dotlottie != null) {
                   return Lottie.memory(dotlottie.animations.values.single);
@@ -117,95 +111,81 @@ class _HomeScreenState extends State<HomeScreen> {
                   return Container();
                 }
               }),
-              Text(
-                '${_weather?.temperature}°',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 40,
-                  fontWeight: FontWeight.w500,
+              Align(
+                child: Text(
+                  '${_weather?.temperatureCelsius}°',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 40,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
-              const Spacer(),
+              const SizedBox(
+                height: 40,
+              ),
               SizedBox(
                 width: size.width,
                 child: Row(
                   children: [
                     const Spacer(),
-                    Stack(children: [
-                      Container(
-                        height: size.width / 3,
-                        width: size.width / 3,
-                        decoration: BoxDecoration(
-                          // color: Colors.red,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.white, width: 3),
-                        ),
-                        child: DotLottieLoader.fromAsset(
-                            "assets/lottie/sunrise.lottie", frameBuilder:
-                                (BuildContext ctx, DotLottie? dotlottie) {
-                          if (dotlottie != null) {
-                            return Lottie.memory(
-                                dotlottie.animations.values.single);
-                          } else {
-                            return Container();
-                          }
-                        }),
-                      ),
-                      Positioned(
-                        top: 5,
-                        left: 20,
-                        child: Center(
-                          child: Text(
-                            _formatTimestamp(_weather?.sunrise),
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                      )
-                    ]),
+                    WeatherChart(
+                      size: size,
+                      heading: 'UV',
+                      subheading: _weather?.uvindextext ?? "loading ...",
+                      value: _weather?.uvindex ?? 0,
+                      color: Colors.yellow,
+                      minimum: 0,
+                      maximum: 10,
+                    ),
                     const Spacer(),
-                    Stack(children: [
-                      Container(
-                        height: size.width / 3,
-                        width: size.width / 3,
-                        decoration: BoxDecoration(
-                          // color: Colors.red,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: Colors.white, width: 3),
-                        ),
-                        child: DotLottieLoader.fromAsset(
-                            "assets/lottie/sunset.lottie", frameBuilder:
-                                (BuildContext ctx, DotLottie? dotlottie) {
-                          if (dotlottie != null) {
-                            return Lottie.memory(
-                                dotlottie.animations.values.single);
-                          } else {
-                            return Container();
-                          }
-                        }),
-                      ),
-                      Positioned(
-                        top: 5,
-                        left: 20,
-                        child: Center(
-                          child: Text(
-                            _formatTimestamp(_weather?.sunset),
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 24,
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                      )
-                    ]),
+                    WeatherChart(
+                      size: size,
+                      heading: 'Humidity',
+                      subheading: "${_weather?.humidity.toString()}%",
+                      value: _weather?.humidity ?? 0,
+                      color: Colors.blue,
+                      minimum: 0,
+                      maximum: 100,
+                    ),
                     const Spacer(),
                   ],
                 ),
               ),
               const SizedBox(
                 height: 40,
+              ),
+              SizedBox(
+                width: size.width,
+                child: Row(
+                  children: [
+                    const Spacer(),
+                    WeatherChart(
+                      size: size,
+                      heading: 'Real Feel',
+                      subheading: "${_weather?.realfeeltemperature}°",
+                      value: _weather?.realfeeltemperature ?? 0,
+                      color: Colors.green,
+                      minimum: 0,
+                      maximum: 60,
+                    ),
+                    const Spacer(),
+                    WeatherChart(
+                      size: size,
+                      heading: 'Pressure',
+                      subheading:
+                          _weather?.pressure.toString() ?? "loading ...",
+                      value: _weather?.pressure ?? 0,
+                      color: Colors.blue,
+                      minimum: 0,
+                      maximum: 1084,
+                    ),
+                    const Spacer(),
+                  ],
+                ),
+              ),
+              const SizedBox(
+                height: 50,
               )
             ],
           ),
