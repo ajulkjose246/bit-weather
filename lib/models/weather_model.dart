@@ -2,6 +2,7 @@ class Weather {
   final String weatherText;
   final double temperatureCelsius;
   final String uvindextext;
+  final String link;
   final double uvindex;
   final double humidity;
   final double realfeeltemperature;
@@ -10,6 +11,7 @@ class Weather {
   Weather({
     required this.uvindextext,
     required this.uvindex,
+    required this.link,
     required this.humidity,
     required this.weatherText,
     required this.temperatureCelsius,
@@ -27,6 +29,7 @@ class Weather {
       realfeeltemperature:
           json["RealFeelTemperature"]["Metric"]["Value"].toDouble() ?? 0.0,
       pressure: json["Pressure"]["Metric"]["Value"].toDouble() ?? 0.0,
+      link: json["Link"] ?? "",
     );
   }
 }

@@ -63,11 +63,9 @@ class WeatherChart extends StatelessWidget {
                     showAxisLine: false,
                     annotations: <GaugeAnnotation>[
                       GaugeAnnotation(
-                          widget: Container(
-                              child: Text(value.toString(),
-                                  style: const TextStyle(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold))),
+                          widget: Text(value.toString(),
+                              style: const TextStyle(
+                                  fontSize: 20, fontWeight: FontWeight.bold)),
                           angle: 90,
                           positionFactor: 0.8)
                     ],

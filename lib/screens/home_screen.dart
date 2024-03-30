@@ -2,9 +2,12 @@ import 'package:bitweather/components/weather_charts.dart';
 import 'package:bitweather/models/weather_model.dart';
 import 'package:bitweather/services/weather_service.dart';
 import 'package:dotlottie_loader/dotlottie_loader.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:lottie/lottie.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -73,6 +76,13 @@ class _HomeScreenState extends State<HomeScreen> {
       case "sunny":
       default:
         return "assets/lottie/clear.lottie";
+    }
+  }
+
+  Future<void> _launchUrl() async {
+    final Uri _url = Uri.parse(_weather?.link ?? "");
+    if (!await launchUrl(_url)) {
+      throw Exception('Could not launch $_url');
     }
   }
 
@@ -186,6 +196,25 @@ class _HomeScreenState extends State<HomeScreen> {
                           const Spacer(),
                         ],
                       ),
+                    ),
+                    const SizedBox(
+                      height: 50,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "Data provided by ",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        GestureDetector(
+                          onTap: _launchUrl,
+                          child: Image.asset(
+                            "assets/images/accuweather.png",
+                            scale: 20,
+                          ),
+                        )
+                      ],
                     ),
                     const SizedBox(
                       height: 50,

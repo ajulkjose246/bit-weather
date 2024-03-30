@@ -19,35 +19,30 @@ class WeatherService {
   // final Location _location = Location();
 
   Future<Position?> getCurrentCity() async {
+    //get permissions from user
     LocationPermission permission = await Geolocator.checkPermission();
-
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return null;
-      }
     } else if (permission == LocationPermission.deniedForever) {
-      return null;
-    } else if (permission == LocationPermission.whileInUse ||
-        permission == LocationPermission.always) {
-      try {
-        Position position = await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.high);
-        return position;
-      } catch (e) {
-        Fluttertoast.showToast(
-          msg: '$e',
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          timeInSecForIosWeb: 1,
-          fontSize: 16.0,
-        ).then((value) => exit(0));
-        return null;
-      }
+      permission = await Geolocator.requestPermission();
+    } else if (permission == LocationPermission.unableToDetermine) {
+      permission = await Geolocator.requestPermission();
     }
-
-    // This return statement is added for safety but should not be reached
-    return null;
+    //fetch the current location
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      return position;
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: '$e',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        fontSize: 16.0,
+      ).then((value) => exit(0));
+      return null;
+    }
   }
 
   Future<Placemark?> getLocation(Position? position) async {
