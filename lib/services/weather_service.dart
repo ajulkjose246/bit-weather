@@ -1,6 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:bitweather/models/weather_model.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:http/http.dart' as http;
@@ -12,20 +14,40 @@ class WeatherService {
       "https://dataservice.accuweather.com/currentconditions/v1/";
 
   WeatherService();
+  // WeatherService.init();
+  // static LocationService instance = LocationService.init();
+  // final Location _location = Location();
 
-  Future<Position> getCurrentCity() async {
-    //get permissions from user
+  Future<Position?> getCurrentCity() async {
     LocationPermission permission = await Geolocator.checkPermission();
+
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return null;
+      }
+    } else if (permission == LocationPermission.deniedForever) {
+      return null;
+    } else if (permission == LocationPermission.whileInUse ||
+        permission == LocationPermission.always) {
+      try {
+        Position position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high);
+        return position;
+      } catch (e) {
+        Fluttertoast.showToast(
+          msg: '$e',
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          fontSize: 16.0,
+        ).then((value) => exit(0));
+        return null;
+      }
     }
 
-    //fetch the current location
-    Position position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
-    //current location to city
-
-    return position;
+    // This return statement is added for safety but should not be reached
+    return null;
   }
 
   Future<Placemark?> getLocation(Position? position) async {
@@ -39,6 +61,13 @@ class WeatherService {
           return null;
         }
       } catch (e) {
+        Fluttertoast.showToast(
+          msg: e.toString(),
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          fontSize: 16.0,
+        );
         // ignore: avoid_print
         print(e);
       }
@@ -47,9 +76,11 @@ class WeatherService {
   }
 
   Future<Weather> getAccuweather(String postCode) async {
-    var apiKey = apiKeys[2];
+    var apiKey = apiKeys[4];
+
     final response = await http.get(Uri.parse(
         'https://dataservice.accuweather.com/locations/v1/postalcodes/IN/search?apikey=$apiKey&details=true&q=$postCode'));
+
     if (response.statusCode == 200) {
       List<dynamic> responseData = jsonDecode(response.body);
       if (responseData.isNotEmpty) {
@@ -62,6 +93,7 @@ class WeatherService {
           if (jsonData is List && jsonData.isNotEmpty) {
             // Access the first item in the array
             final firstItem = jsonData[0];
+
             return Weather.fromJSON(firstItem);
           } else {
             throw Exception("Invalid JSON format: $jsonData");
