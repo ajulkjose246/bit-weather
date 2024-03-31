@@ -16,6 +16,7 @@ class WeatherService {
   WeatherService();
 
   Future<Position?> getCurrentCity() async {
+    print("getCurrentCity");
     //get permissions from user
     LocationPermission permission = await Geolocator.checkPermission();
 
@@ -38,7 +39,7 @@ class WeatherService {
         gravity: ToastGravity.CENTER,
         timeInSecForIosWeb: 1,
         fontSize: 16.0,
-      ).then((value) => Future.delayed(Duration(seconds: 2), () {
+      ).then((value) => Future.delayed(const Duration(seconds: 2), () {
             exit(0);
           }));
       return null;
@@ -46,6 +47,7 @@ class WeatherService {
   }
 
   Future<Placemark?> getLocation(Position? position) async {
+    print("getLocation");
     if (position != null) {
       try {
         final placemark = await placemarkFromCoordinates(
@@ -75,6 +77,7 @@ class WeatherService {
   }
 
   Future<Weather?> getAccuweather(String postCode) async {
+    print("getAccuweather");
     String? apiKey;
 
     bool foundApiKey = false;
