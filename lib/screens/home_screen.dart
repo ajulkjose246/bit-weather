@@ -27,18 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final _weatherService = WeatherService();
 
-  Future<void> _fetchWeather({bool refreshed = false}) async {
-    if (!refreshed) {
-      postalCode = SharedPreferencesService().getPostalCode();
-      locality = SharedPreferencesService().getLocality();
-    } else {
-      // Always fetch current location when refreshing
-      Position? city = await _weatherService.getCurrentCity();
-      placemark = await _weatherService.getLocation(city);
-      postalCode = placemark?.postalCode;
-      locality = placemark?.locality;
-    }
-
+  Future<void> _fetchWeather() async {
     final List<ConnectivityResult> connectivityResult =
         await Connectivity().checkConnectivity();
     if (connectivityResult.contains(ConnectivityResult.none)) {
@@ -53,6 +42,23 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     try {
+      postalCode = SharedPreferencesService().getPostalCode();
+      locality = SharedPreferencesService().getLocality();
+
+      print(postalCode);
+      if (_isRefreshed) {
+        Position? city = await _weatherService.getCurrentCity();
+        placemark = await _weatherService.getLocation(city);
+        postalCode = placemark?.postalCode;
+        locality = placemark?.locality;
+      }
+      if (postalCode == null) {
+        Position? city = await _weatherService.getCurrentCity();
+        placemark = await _weatherService.getLocation(city);
+        postalCode = placemark?.postalCode;
+        locality = placemark?.locality;
+      }
+
       final Weather? weather =
           await _weatherService.getAccuweather(postalCode!);
       setState(() {
@@ -87,7 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _handleRefresh() async {
     _isRefreshed = true;
-    await _fetchWeather(refreshed: true);
+    await _fetchWeather();
   }
 
   @override
