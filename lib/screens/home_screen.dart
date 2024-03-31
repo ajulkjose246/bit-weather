@@ -1,10 +1,13 @@
+import 'dart:io';
+
 import 'package:bitweather/components/weather_charts.dart';
 import 'package:bitweather/models/weather_model.dart';
+import 'package:bitweather/services/shared_preferences.dart';
 import 'package:bitweather/services/weather_service.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dotlottie_loader/dotlottie_loader.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:lottie/lottie.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -25,19 +28,34 @@ class _HomeScreenState extends State<HomeScreen> {
   var placemark;
 
   //fetch weather
+  String? locality;
   _fetchWeather() async {
-    //get current city
+    String postelCode = SharedPreferencesService().getPostalCode();
+    locality = SharedPreferencesService().getLocality();
+    final Weather? weather;
+    final List<ConnectivityResult> connectivityResult =
+        await (Connectivity().checkConnectivity());
+    if (connectivityResult.contains(ConnectivityResult.none)) {
+      Fluttertoast.showToast(
+        msg: 'Network is not connected',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        fontSize: 16.0,
+      ).then((value) => Future.delayed(Duration(seconds: 2), () {
+            exit(0);
+          }));
+    }
 
-    Position? city = await _weatherService.getCurrentCity();
-
-    //get weather for city
     try {
-      placemark = await _weatherService.getLocation(city);
-      // print(placemark);
-      final weather =
-          await _weatherService.getAccuweather(placemark?.postalCode);
-
-      // await _weatherService.getWeather(city.latitude, city.longitude);
+      if (postelCode.isEmpty) {
+        Position? city = await _weatherService.getCurrentCity();
+        placemark = await _weatherService.getLocation(city);
+        // print(placemark);
+        weather = await _weatherService.getAccuweather(placemark?.postalCode);
+      } else {
+        weather = await _weatherService.getAccuweather(postelCode);
+      }
       setState(() {
         _weather = weather;
       });
@@ -80,9 +98,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _launchUrl() async {
-    final Uri _url = Uri.parse(_weather?.link ?? "");
-    if (!await launchUrl(_url)) {
-      throw Exception('Could not launch $_url');
+    final Uri url = Uri.parse(_weather?.link ?? "");
+    if (!await launchUrl(url)) {
+      throw Exception('Could not launch $url');
     }
   }
 
@@ -106,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     Align(
                       child: Text(
-                        placemark?.locality ?? "loading ...",
+                        locality ?? placemark?.locality ?? "loading ...",
                         // _weather?.cityName ?? "loading ...",
                         style: const TextStyle(
                             color: Colors.white,

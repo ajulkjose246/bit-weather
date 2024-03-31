@@ -1,7 +1,12 @@
 import 'package:bitweather/screens/home_screen.dart';
+import 'package:bitweather/services/shared_preferences.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await SharedPreferencesService.init();
+
   runApp(const MyApp());
 }
 

@@ -45,6 +45,10 @@ dependencies:
   syncfusion_flutter_gauges: ^25.1.37
   fluttertoast: ^8.2.4
   url_launcher: ^6.2.5
+  firebase_core: ^2.27.2
+  firebase_database: ^10.4.11
+  shared_preferences: ^2.2.2
+  connectivity_plus: ^6.0.1
 
 dev_dependencies:
   flutter_test:

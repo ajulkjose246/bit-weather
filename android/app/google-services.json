@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "194566883429",
+    "project_id": "bit-weather",
+    "storage_bucket": "bit-weather.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:194566883429:android:22ad199dac7c2409d71e8c",
+        "android_client_info": {
+          "package_name": "com.quantumweft.bitweather"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChN7i7Ui3Kjwp4nM85TknoMKzvrHUULsM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
