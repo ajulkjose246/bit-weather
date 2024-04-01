@@ -58,6 +58,9 @@ class WeatherService {
               .storePostalCode(placemark[0].postalCode.toString());
           SharedPreferencesService()
               .storeLocality(placemark[0].locality.toString());
+          SharedPreferencesService().storeCountrycode(
+              placemark[0].isoCountryCode.toString().toUpperCase());
+          print(placemark[0].isoCountryCode.toString().toUpperCase());
           return placemark[0];
         } else {
           return null;
@@ -77,7 +80,7 @@ class WeatherService {
     return null;
   }
 
-  Future<Weather?> getAccuweather(String postCode) async {
+  Future<Weather?> getAccuweather(String postCode, String countrycode) async {
     print("getAccuweather");
     String? apiKey;
     // final jsonData;
@@ -103,7 +106,7 @@ class WeatherService {
       final value = entry.value;
 
       final response = await http.get(Uri.parse(
-          'https://dataservice.accuweather.com/locations/v1/postalcodes/IN/search?apikey=$value&details=true&q=$postCode'));
+          'https://dataservice.accuweather.com/locations/v1/postalcodes/$countrycode/search?apikey=$value&details=true&q=$postCode'));
       if (response.statusCode == 200) {
         apiKey = value;
         print(value);
@@ -115,7 +118,7 @@ class WeatherService {
     if (foundApiKey) {
       print(apiKey);
       final response = await http.get(Uri.parse(
-          'https://dataservice.accuweather.com/locations/v1/postalcodes/IN/search?apikey=$apiKey&details=true&q=$postCode'));
+          'https://dataservice.accuweather.com/locations/v1/postalcodes/$countrycode/search?apikey=$apiKey&details=true&q=$postCode'));
 
       if (response.statusCode == 200) {
         List<dynamic> responseData = jsonDecode(response.body);

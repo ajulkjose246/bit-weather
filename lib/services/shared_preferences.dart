@@ -17,6 +17,10 @@ class SharedPreferencesService {
     prefs.setString("locality", locality);
   }
 
+  storeCountrycode(String countrycode) {
+    prefs.setString("countrycode", countrycode);
+  }
+
   storeApi(String list) {
     prefs.setString("apiList", list);
   }
@@ -27,6 +31,10 @@ class SharedPreferencesService {
 
   getLocality() {
     return prefs.getString("locality");
+  }
+
+  getCountrycode() {
+    return prefs.getString("countrycode");
   }
 
   getApi() {

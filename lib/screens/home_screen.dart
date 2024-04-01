@@ -24,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   var placemark;
   bool _isRefreshed = false;
   String? postalCode;
+  String? countrycode;
 
   final _weatherService = WeatherService();
 
@@ -44,6 +45,7 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       postalCode = SharedPreferencesService().getPostalCode();
       locality = SharedPreferencesService().getLocality();
+      countrycode = SharedPreferencesService().getCountrycode();
 
       print(postalCode);
       if (_isRefreshed) {
@@ -51,16 +53,18 @@ class _HomeScreenState extends State<HomeScreen> {
         placemark = await _weatherService.getLocation(city);
         postalCode = placemark?.postalCode;
         locality = placemark?.locality;
+        countrycode = placemark?.isoCountryCode;
       }
       if (postalCode == null) {
         Position? city = await _weatherService.getCurrentCity();
         placemark = await _weatherService.getLocation(city);
         postalCode = placemark?.postalCode;
         locality = placemark?.locality;
+        countrycode = placemark?.isoCountryCode;
       }
 
       final Weather? weather =
-          await _weatherService.getAccuweather(postalCode!);
+          await _weatherService.getAccuweather(postalCode!, countrycode!);
       setState(() {
         _weather = weather;
       });
@@ -72,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
         gravity: ToastGravity.CENTER,
         timeInSecForIosWeb: 1,
         fontSize: 16.0,
-      );
+      ).then((value) => _fetchWeather());
     }
   }
 
@@ -84,12 +88,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _launchUrl() async {
     final Uri url = Uri.parse(_weather?.link ?? "");
-    // ignore: deprecated_member_use
-    if (await canLaunch(url.toString())) {
-      // ignore: deprecated_member_use
+    try {
+      await canLaunch(url.toString());
       await launch(url.toString());
-    } else {
-      throw 'Could not launch $url';
+    } catch (e) {
+      throw 'Could not launch $e';
     }
   }
 
