@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:bitweather/models/weather_model.dart';
+import 'package:bitweather/secrets/variables.dart';
 import 'package:bitweather/services/shared_preferences.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:geocoding/geocoding.dart';
@@ -82,19 +83,20 @@ class WeatherService {
     // final jsonData;
 
     bool foundApiKey = false;
+    var jsonData;
 
-    String? apiList = SharedPreferencesService().getApi().toString();
-    var jsonData = json.decode(apiList);
-
-    if (jsonData == null) {
-      print("no data");
-      final apiCollection = await http
-          .get(Uri.parse('https://ajulkjose-v1.000webhostapp.com/apikeys'));
-      print(apiCollection.statusCode);
+    final apiCollection = await http
+        .get(Uri.parse('https://ajulkjose-v1.000webhostapp.com/apikeys'));
+    print(apiCollection.statusCode);
+    if (apiCollection.statusCode != 200) {
+      print("error fetching");
+      String? apiList = SharedPreferencesService().getApi().toString();
+      jsonData = json.decode(apiList);
+      jsonData ??= json.decode(apiLocalList);
+    } else {
+      print("success fetching");
       SharedPreferencesService().storeApi(apiCollection.body);
       jsonData = json.decode(apiCollection.body);
-    } else {
-      print("has data");
     }
 
     for (var entry in jsonData.entries) {
