@@ -17,11 +17,19 @@ class SharedPreferencesService {
     prefs.setString("locality", locality);
   }
 
+  storeApi(String list) {
+    prefs.setString("apiList", list);
+  }
+
   getPostalCode() {
     return prefs.getString("postalCode");
   }
 
   getLocality() {
     return prefs.getString("locality");
+  }
+
+  getApi() {
+    return prefs.getString("apiList");
   }
 }

@@ -84,7 +84,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _launchUrl() async {
     final Uri url = Uri.parse(_weather?.link ?? "");
+    // ignore: deprecated_member_use
     if (await canLaunch(url.toString())) {
+      // ignore: deprecated_member_use
       await launch(url.toString());
     } else {
       throw 'Could not launch $url';
@@ -109,8 +111,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   showChildOpacityTransition: false,
                   child: ListView(
                     children: [
-                      SizedBox(height: 25),
-                      Icon(
+                      const SizedBox(height: 25),
+                      const Icon(
                         Icons.location_on,
                         size: 20,
                         color: Colors.white,
@@ -147,7 +149,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 40),
+                      const SizedBox(height: 40),
                       Row(
                         children: [
                           const Spacer(),

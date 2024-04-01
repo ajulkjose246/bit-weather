@@ -79,25 +79,34 @@ class WeatherService {
   Future<Weather?> getAccuweather(String postCode) async {
     print("getAccuweather");
     String? apiKey;
+    // final jsonData;
 
     bool foundApiKey = false;
 
-    final apiCollection = await http
-        .get(Uri.parse('https://ajulkjose-v1.000webhostapp.com/apikeys'));
-    print(apiCollection.statusCode);
-    if (apiCollection.statusCode == 200) {
-      final jsonData = json.decode(apiCollection.body);
-      for (var entry in jsonData.entries) {
-        final value = entry.value;
+    String? apiList = SharedPreferencesService().getApi().toString();
+    var jsonData = json.decode(apiList);
 
-        final response = await http.get(Uri.parse(
-            'https://dataservice.accuweather.com/locations/v1/postalcodes/IN/search?apikey=$value&details=true&q=$postCode'));
-        if (response.statusCode == 200) {
-          apiKey = value;
-          print(value);
-          foundApiKey = true;
-          break; // Exit from the loop
-        }
+    if (jsonData == null) {
+      print("no data");
+      final apiCollection = await http
+          .get(Uri.parse('https://ajulkjose-v1.000webhostapp.com/apikeys'));
+      print(apiCollection.statusCode);
+      SharedPreferencesService().storeApi(apiCollection.body);
+      jsonData = json.decode(apiCollection.body);
+    } else {
+      print("has data");
+    }
+
+    for (var entry in jsonData.entries) {
+      final value = entry.value;
+
+      final response = await http.get(Uri.parse(
+          'https://dataservice.accuweather.com/locations/v1/postalcodes/IN/search?apikey=$value&details=true&q=$postCode'));
+      if (response.statusCode == 200) {
+        apiKey = value;
+        print(value);
+        foundApiKey = true;
+        break; // Exit from the loop
       }
     }
 

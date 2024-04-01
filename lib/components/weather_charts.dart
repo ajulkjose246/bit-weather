@@ -21,6 +21,7 @@ class WeatherChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double width = size.width;
     return Container(
       width: size.width / 2.5,
       height: size.width / 2.5,
@@ -37,21 +38,21 @@ class WeatherChart extends StatelessWidget {
           children: [
             Text(
               heading,
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.black,
-                fontSize: 20,
+                fontSize: width * 0.04,
                 fontWeight: FontWeight.w500,
               ),
             ),
             Text(
               subheading,
-              style: const TextStyle(
+              style: TextStyle(
                 color: Colors.grey,
-                fontSize: 15,
+                fontSize: width * 0.03,
               ),
             ),
             SizedBox(
-              height: 100,
+              height: width * 0.22,
               child: SfRadialGauge(
                 enableLoadingAnimation: true,
                 animationDuration: 5,
@@ -64,8 +65,9 @@ class WeatherChart extends StatelessWidget {
                     annotations: <GaugeAnnotation>[
                       GaugeAnnotation(
                           widget: Text(value.toString(),
-                              style: const TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold)),
+                              style: TextStyle(
+                                  fontSize: width * 0.03,
+                                  fontWeight: FontWeight.bold)),
                           angle: 90,
                           positionFactor: 0.8)
                     ],
