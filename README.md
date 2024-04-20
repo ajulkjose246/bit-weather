@@ -29,6 +29,3 @@ Bit-Weather is an intuitive and efficient Android application designed to provid
 - **Firebase Firestore**: Integrates with Firebase Firestore for efficient data management and synchronization.
 - **Material Design**: Adopts Material Design principles for a modern and responsive user experience.
 
-## GitHub Repository
-
-[Bit-Weather on GitHub](#)
