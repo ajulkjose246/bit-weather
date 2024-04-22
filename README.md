@@ -15,7 +15,7 @@ Bit-Weather is an intuitive and efficient Android application designed to provid
 </div>
 
 <!-- Download All Button -->
-## Bit-Wall: Screenshots
+## Bit-Wall: Download
 
 <a href="https://drive.google.com/file/d/1b_LnY5Xe9Df93UojCsC2kQD9ZTN4QK5a/view?usp=sharing" download style="display: block; margin-top: 20px; padding: 10px 20px; background-color: #007bff; color: #fff; text-align: center; text-decoration: none; border-radius: 5px; cursor: pointer;">
     Download App
